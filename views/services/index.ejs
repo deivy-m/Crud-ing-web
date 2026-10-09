@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head><title>Panel de Servicios</title></head>
+<body>
+  <h2>Panel de Gestión de Servicios (CRUD Protegido)</h2>
+  <p>Bienvenido, <strong><%= user %></strong> | <a href="/auth/logout">Cerrar Sesión</a></p>
+  <hr>
+  <a href="/services/new">Crear Nuevo Servicio</a>
+  <br><br>
+  <table border="1" cellpadding="8">
+    <thead>
+      <tr>
+        <th>Nombre del Servicio</th>
+        <th>Precio ($)</th>
+        <th>Duración (min)</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% services.forEach(s => { %>
+        <tr>
+          <td><%= s.nombre %></td>
+          <td><%= s.precio %></td>
+          <td><%= s.duracion %> min</td>
+          <td>
+            <a href="/services/edit/<%= s._id %>">Editar</a>
+            <form action="/services/delete/<%= s._id %>" method="POST" style="display:inline;">
+              <button type="submit">Eliminar</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</body>
+</html>

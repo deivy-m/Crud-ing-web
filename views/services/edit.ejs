@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head><title>Editar Servicio</title></head>
+<body>
+  <h2>Editar Servicio</h2>
+  <form action="/services/update/<%= service._id %>" method="POST">
+    <label>Nombre:</label> <input type="text" name="nombre" value="<%= service.nombre %>" required><br><br>
+    <label>Precio:</label> <input type="number" name="precio" value="<%= service.precio %>" required><br><br>
+    <label>Duración (minutos):</label> <input type="number" name="duracion" value="<%= service.duracion %>" required><br><br>
+    <button type="submit">Actualizar</button>
+  </form>
+  <a href="/services">Volver</a>
+</body>
+</html>

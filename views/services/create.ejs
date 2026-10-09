@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head><title>Nuevo Servicio</title></head>
+<body>
+  <h2>Crear Servicio</h2>
+  <form action="/services" method="POST">
+    <label>Nombre:</label> <input type="text" name="nombre" required><br><br>
+    <label>Precio:</label> <input type="number" name="precio" required><br><br>
+    <label>Duración (minutos):</label> <input type="number" name="duracion" required><br><br>
+    <button type="submit">Guardar</button>
+  </form>
+  <a href="/services">Volver</a>
+</body>
+</html>

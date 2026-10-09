@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head><title>Login</title></head>
+<body>
+  <h2>Iniciar Sesión</h2>
+  <% if (error) { %><p style="color:red;"><%= error %></p><% } %>
+  <form action="/auth/login" method="POST">
+    <label>Email:</label>
+    <input type="email" name="email" required><br><br>
+    <label>Contraseña:</label>
+    <input type="password" name="password" required><br><br>
+    <button type="submit">Ingresar</button>
+  </form>
+  <p>¿No tienes cuenta? <a href="/auth/register">Regístrate aquí</a></p>
+</body>
+</html>
