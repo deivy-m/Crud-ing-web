@@ -34,7 +34,32 @@
     </select><br><br>
 
     <label>Fecha:</label> <input type="date" name="fecha" required><br><br>
-    <label>Hora:</label> <input type="time" name="hora" required><br><br>
+
+    <label>Hora (Atención de 10:00 AM a 8:00 PM):</label>
+    <select name="hora" required>
+      <option value="">-- Seleccionar horario --</option>
+      <option value="10:00">10:00 AM</option>
+      <option value="10:30">10:30 AM</option>
+      <option value="11:00">11:00 AM</option>
+      <option value="11:30">11:30 AM</option>
+      <option value="12:00">12:00 PM</option>
+      <option value="12:30">12:30 PM</option>
+      <option value="13:00">01:00 PM</option>
+      <option value="13:30">01:30 PM</option>
+      <option value="14:00">02:00 PM</option>
+      <option value="14:30">02:30 PM</option>
+      <option value="15:00">03:00 PM</option>
+      <option value="15:30">03:30 PM</option>
+      <option value="16:00">04:00 PM</option>
+      <option value="16:30">04:30 PM</option>
+      <option value="17:00">05:00 PM</option>
+      <option value="17:30">05:30 PM</option>
+      <option value="18:00">06:00 PM</option>
+      <option value="18:30">06:30 PM</option>
+      <option value="19:00">07:00 PM</option>
+      <option value="19:30">07:30 PM</option>
+      <option value="20:00">08:00 PM</option>
+    </select><br><br>
 
     <button type="submit">Calcular Precio</button>
   </form>
@@ -44,6 +69,7 @@
     <h3>Resultado del Cálculo</h3>
     <p><strong>Servicio:</strong> <%= resultado.servicio %></p>
     <p><strong>Barbero:</strong> <%= resultado.barbero %></p>
+    <p><strong>Fecha y Hora:</strong> <%= resultado.fecha %> a las <%= resultado.hora %></p>
     <p><strong>Precio Base:</strong> $<%= resultado.precioBase %></p>
     <p><strong>Precio Final Dinámico:</strong> <span style="font-size:20px; color:green; font-weight:bold;">$<%= resultado.precioFinal %></span></p>
 

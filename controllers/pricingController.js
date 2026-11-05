@@ -44,6 +44,20 @@ exports.calculateDynamicPrice = async (req, res) => {
       });
     }
 
+    // Validación de horario de atención: 10:00 AM a 8:00 PM (20:00)
+    const [horas, minutos] = hora.split(':').map(Number);
+    if (horas < 10 || horas > 20 || (horas === 20 && minutos > 0)) {
+      return res.render('pricing/index', {
+        services,
+        barbers,
+        seasons,
+        rules,
+        resultado: null,
+        error: 'El horario de atención de la barbería es únicamente de 10:00 AM a 08:00 PM.',
+        user: req.session ? req.session.userName : null
+      });
+    }
+
     const service = await Service.findById(servicioId);
     const barber = await Barber.findById(barberId);
 
@@ -62,7 +76,7 @@ exports.calculateDynamicPrice = async (req, res) => {
     const precioBase = Number(service.precio);
     const factoresAplicados = [];
 
-    // 1. Factor por Categoría del Barbero (alimentado desde admin Barberos)
+    // 1. Factor por Categoría del Barbero
     let factorBarbero = 0;
     if (barber.categoria === 'Junior') {
       factorBarbero = 0;
@@ -87,31 +101,30 @@ exports.calculateDynamicPrice = async (req, res) => {
       factoresAplicados.push({
         nombre: 'Barbero Master',
         tipo: 'categoria_barbero',
-        descripcion: `${barber.nombre} (+30% especialista premium)`,
+        descripcion: `${barber.nombre} (+30% especialista)`,
         porcentaje: '+30%',
         impacto: precioBase * factorBarbero
       });
     }
 
     // 2. Factor Horario (Hora pico vs Hora valle)
-    const [horas, minutos] = hora.split(':').map(Number);
     const fechaObj = new Date(fecha + 'T00:00:00');
     const diaSemana = fechaObj.getDay(); // 0 = Domingo, 1 = Lunes, ..., 5 = Viernes, 6 = Sábado
     let factorHorario = 0;
 
-    // Lunes(1), Martes(2), Miércoles(3) de 9:00 a 12:00 -> Hora Valle (-15%)
-    if ((diaSemana >= 1 && diaSemana <= 3) && (horas >= 9 && horas < 12)) {
+    // Lunes(1), Martes(2), Miércoles(3) de 10:00 a 12:00 -> Hora Valle (-15%)
+    if ((diaSemana >= 1 && diaSemana <= 3) && (horas >= 10 && horas < 12)) {
       factorHorario = -0.15;
       factoresAplicados.push({
         nombre: 'Hora Valle (Happy Hour)',
         tipo: 'horario',
-        descripcion: 'Lunes a Miércoles 9:00–12:00 (-15% descuento)',
+        descripcion: 'Lunes a Miércoles 10:00–12:00 (-15% descuento)',
         porcentaje: '-15%',
         impacto: precioBase * factorHorario
       });
     } 
     // Viernes(5), Sábado(6) de 14:00 a 20:00 -> Hora Pico (+20%)
-    else if ((diaSemana === 5 || diaSemana === 6) && (horas >= 14 && horas < 20)) {
+    else if ((diaSemana === 5 || diaSemana === 6) && (horas >= 14 && horas <= 20)) {
       factorHorario = 0.20;
       factoresAplicados.push({
         nombre: 'Hora Pico (Alta Demanda)',
@@ -130,7 +143,7 @@ exports.calculateDynamicPrice = async (req, res) => {
       });
     }
 
-    // 3. Factor Temporada Especial (alimentado desde admin Seasons)
+    // 3. Factor Temporada Especial
     let factorTemporada = 0;
     const temporadaCoincidente = seasons.find(s => {
       const inicio = new Date(s.fechaInicio);
@@ -142,7 +155,7 @@ exports.calculateDynamicPrice = async (req, res) => {
       factorTemporada = Number(temporadaCoincidente.factorPrecio);
       const pctStr = (factorTemporada >= 0 ? '+' : '') + (factorTemporada * 100).toFixed(0) + '%';
       factoresAplicados.push({
-        nombre: `Temporada Especial: ${temporadaCoincidente.nombre}`,
+        nombre: `Temporada: ${temporadaCoincidente.nombre}`,
         tipo: 'temporada',
         descripcion: `Del ${new Date(temporadaCoincidente.fechaInicio).toLocaleDateString('es-EC')} al ${new Date(temporadaCoincidente.fechaFin).toLocaleDateString('es-EC')}`,
         porcentaje: pctStr,
@@ -159,7 +172,7 @@ exports.calculateDynamicPrice = async (req, res) => {
       precioBase: precioBase.toFixed(2),
       barbero: `${barber.nombre} (${barber.categoria})`,
       fecha,
-      hora,
+      hora: (horas > 12 ? (horas - 12) : horas) + ':' + (minutos < 10 ? '0' + minutos : minutos) + ' ' + (horas >= 12 ? 'PM' : 'AM'),
       factoresAplicados,
       precioFinal: precioFinal.toFixed(2),
       diferencia: (precioFinal - precioBase).toFixed(2)
