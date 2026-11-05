@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Barberos | BarberManager</title>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 20px; background-color: #f8fafc; color: #1e293b; }
+    .header { background: #1e293b; color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; }
+    .header h2 { margin: 0 0 10px 0; }
+    .nav { margin-top: 8px; }
+    .nav a { color: #93c5fd; text-decoration: none; margin-right: 15px; font-weight: 500; }
+    .nav a:hover, .nav a.active { color: white; text-decoration: underline; }
+    .nav .logout { color: #fca5a5; float: right; }
+    .card { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .btn { display: inline-block; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 14px; border: none; cursor: pointer; }
+    .btn-primary { background: #2563eb; color: white; }
+    .btn-primary:hover { background: #1d4ed8; }
+    .btn-danger { background: #dc2626; color: white; padding: 4px 10px; font-size: 12px; }
+    .btn-edit { background: #f59e0b; color: white; padding: 4px 10px; font-size: 12px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
+    th { background: #f1f5f9; padding: 10px 12px; text-align: left; font-size: 13px; color: #475569; border-bottom: 2px solid #e2e8f0; }
+    td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
+    tr:hover td { background: #f8fafc; }
+    .badge { display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+    .badge-junior { background: #dbeafe; color: #1e40af; }
+    .badge-senior { background: #f3e8ff; color: #6b21a8; }
+    .badge-master { background: #fef3c7; color: #92400e; }
+    .badge-active { background: #dcfce7; color: #166534; }
+    .badge-sensitive { background: #fee2e2; color: #991b1b; font-family: monospace; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h2>💈 BarberManager — Panel de Administración</h2>
+    <div class="nav">
+      <span>👤 Administrador: <strong><%= user || 'Admin' %></strong></span> | 
+      <a href="/services">✂️ Servicios</a>
+      <a href="/barbers" class="active">💈 Barberos</a>
+      <a href="/seasons">📅 Temporadas</a>
+      <a href="/pricing-rules">📊 Reglas de Precio</a>
+      <a href="/pricing">⚡ Probar Cotizador (Core)</a>
+      <a href="/auth/logout" class="logout">Cerrar Sesión</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <h3 style="margin: 0;">Catálogo de Barberos</h3>
+        <p style="color: #64748b; margin: 4px 0 0 0; font-size: 13px;">
+          Alimenta el Core asignando la categoría (Junior, Senior, Master) que ajusta la tarifa de servicio.
+          <br><strong>🚨 Validación sensible:</strong> La cédula es verificada en el Back-End con el algoritmo módulo 10 ecuatoriano.
+        </p>
+      </div>
+      <a href="/barbers/new" class="btn btn-primary">+ Registrar Barbero</a>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Cédula (Dato Sensible)</th>
+          <th>Email</th>
+          <th>Teléfono</th>
+          <th>Categoría</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (barbers.length === 0) { %>
+          <tr>
+            <td colspan="7" style="text-align: center; color: #64748b; padding: 25px;">
+              No hay barberos registrados. Haz clic en "Registrar Barbero" para agregar el primero.
+            </td>
+          </tr>
+        <% } %>
+        <% barbers.forEach(b => { %>
+          <tr>
+            <td><strong><%= b.nombre %></strong></td>
+            <td><span class="badge badge-sensitive">🪪 <%= b.cedula %></span></td>
+            <td><%= b.email %></td>
+            <td><%= b.telefono %></td>
+            <td>
+              <% if (b.categoria === 'Junior') { %>
+                <span class="badge badge-junior">Junior (Tarifa base)</span>
+              <% } else if (b.categoria === 'Senior') { %>
+                <span class="badge badge-senior">Senior (+15%)</span>
+              <% } else { %>
+                <span class="badge badge-master">Master (+30%)</span>
+              <% } %>
+            </td>
+            <td><span class="badge badge-active"><%= b.activo ? 'Activo' : 'Inactivo' %></span></td>
+            <td>
+              <a href="/barbers/edit/<%= b._id %>" class="btn btn-edit">Editar</a>
+              <form action="/barbers/delete/<%= b._id %>" method="POST" style="display:inline;" onsubmit="return confirm('¿Seguro que deseas eliminar a este barbero?');">
+                <button type="submit" class="btn btn-danger">Eliminar</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+</body>
+</html>

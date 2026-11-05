@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nueva Temporada | BarberManager</title>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 20px; background-color: #f8fafc; color: #1e293b; }
+    .card { max-width: 650px; margin: 30px auto; background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    h2 { margin-top: 0; color: #1e293b; }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 6px; color: #334155; }
+    input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
+    .help-text { font-size: 12px; color: #64748b; margin-top: 4px; }
+    .alert-error { background: #fee2e2; border-left: 4px solid #ef4444; color: #991b1b; padding: 12px 16px; border-radius: 4px; margin-bottom: 20px; font-size: 14px; }
+    .btn { padding: 10px 18px; border-radius: 6px; font-weight: 600; font-size: 14px; border: none; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn-primary { background: #2563eb; color: white; }
+    .btn-secondary { background: #e2e8f0; color: #475569; margin-left: 10px; }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h2>📅 Crear Nueva Temporada</h2>
+    <p style="color: #64748b; font-size: 13px; margin-bottom: 20px;">
+      Esta temporada servirá como referencia foránea en las reglas de precios del Core.
+    </p>
+
+    <% if (error) { %>
+      <div class="alert-error">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <form action="/seasons" method="POST">
+      <div class="form-group">
+        <label for="nombre">Nombre de la Temporada:</label>
+        <input type="text" id="nombre" name="nombre" placeholder="Ej: Temporada Navideña" required>
+      </div>
+
+      <div class="form-group">
+        <label for="fechaInicio">Fecha de Inicio:</label>
+        <input type="date" id="fechaInicio" name="fechaInicio" required>
+      </div>
+
+      <div class="form-group">
+        <label for="fechaFin">Fecha de Fin (Validación Back-End: posterior a Inicio):</label>
+        <input type="date" id="fechaFin" name="fechaFin" required>
+      </div>
+
+      <div class="form-group">
+        <label for="factorPrecio">Factor de Ajuste de Precio (decimal entre -0.50 y 1.00):</label>
+        <input type="number" id="factorPrecio" name="factorPrecio" step="0.01" min="-0.5" max="1.0" placeholder="Ej: 0.10 (para +10%) o -0.15 (para -15%)" required>
+        <div class="help-text">Ejemplo: <code>0.10</code> = recargo del 10% | <code>-0.10</code> = descuento del 10%</div>
+      </div>
+
+      <div style="margin-top: 25px;">
+        <button type="submit" class="btn btn-primary">💾 Guardar Temporada</button>
+        <a href="/seasons" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+
+</body>
+</html>

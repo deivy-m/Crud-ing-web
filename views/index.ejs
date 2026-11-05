@@ -1,10 +1,76 @@
 <!DOCTYPE html>
-<html>
-<head><title>BarberManager</title></head>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bienvenido a BarberManager</title>
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background-color: #f1f5f9; color: #1e293b; }
+    .hero { background: #1e293b; color: white; padding: 50px 20px; text-align: center; }
+    .hero h1 { font-size: 32px; margin: 0 0 10px 0; }
+    .hero p { color: #94a3b8; font-size: 16px; max-width: 650px; margin: 0 auto 25px auto; }
+    .container { max-width: 900px; margin: -30px auto 40px auto; padding: 0 20px; }
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+    .card { background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 22px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+    .card h3 { margin-top: 0; color: #1e293b; display: flex; align-items: center; gap: 8px; }
+    .card p { color: #64748b; font-size: 14px; line-height: 1.5; }
+    .btn { display: inline-block; padding: 10px 20px; border-radius: 6px; font-weight: 600; text-decoration: none; font-size: 14px; }
+    .btn-primary { background: #2563eb; color: white; }
+    .btn-secondary { background: white; color: #1e293b; border: 1px solid #cbd5e1; margin-left: 10px; }
+    .btn-block { display: block; text-align: center; margin-top: 15px; }
+    .badge { background: #e0f2fe; color: #0369a1; padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; }
+  </style>
+</head>
 <body>
-  <h1>Bienvenido a BarberManager</h1>
-  <a href="/auth/login">Iniciar Sesión</a> | 
-  <a href="/auth/register">Registrarse</a> | 
-  <a href="/services">Ir a la Sección Protegida (Servicios)</a>
+
+  <div class="hero">
+    <h1>💈 BarberManager</h1>
+    <p>Sistema de Gestión para Barberías con Arquitectura MVC y Motor de Precios Dinámicos (Dynamic Pricing Core).</p>
+    <div>
+      <a href="/auth/login" class="btn btn-primary">🔐 Iniciar Sesión (Admin)</a>
+      <a href="/auth/register" class="btn btn-secondary">Crear Cuenta</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="cards-grid">
+      <div class="card">
+        <h3>✂️ Catálogo de Servicios</h3>
+        <p>Define cortes, arreglo de barba y tratamientos con sus precios base y duraciones estimadas.</p>
+        <span class="badge">CRUD Administración</span>
+        <a href="/services" class="btn btn-primary btn-block">Ir a Servicios</a>
+      </div>
+
+      <div class="card">
+        <h3>💈 Gestión de Barberos</h3>
+        <p>Registro de barberos con <strong>validación de cédula en Back-End (dato sensible)</strong> y categoría (Junior, Senior, Master).</p>
+        <span class="badge">Validación Sensible</span>
+        <a href="/barbers" class="btn btn-primary btn-block">Ir a Barberos</a>
+      </div>
+
+      <div class="card">
+        <h3>📅 Temporadas Especiales</h3>
+        <p>Períodos especiales (Navidad, San Valentín) con factores de recargo o descuento porcentual.</p>
+        <span class="badge">CRUD Administración</span>
+        <a href="/seasons" class="btn btn-primary btn-block">Ir a Temporadas</a>
+      </div>
+
+      <div class="card">
+        <h3>📊 Reglas de Precio (Core)</h3>
+        <p>Reglas algorítmicas de tarificación con <strong>dropdown foráneo a Seasons</strong> para modificar precios en tiempo real.</p>
+        <span class="badge">Dropdown Relacional</span>
+        <a href="/pricing-rules" class="btn btn-primary btn-block">Ir a Reglas</a>
+      </div>
+
+      <div class="card" style="grid-column: 1 / -1; background: #f0fdf4; border-color: #86efac;">
+        <h3 style="color: #166534;">⚡ Demostración del Core: Cotizador de Precios Dinámicos</h3>
+        <p style="color: #15803d;">
+          Calcula el precio final combinando el servicio base, barbero seleccionado, día/hora y temporada vigente en base a los datos administrados.
+        </p>
+        <a href="/pricing" class="btn btn-primary" style="background: #16a34a;">Probar Cotizador en Vivo</a>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
