@@ -1,87 +1,43 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gestión de Servicios | BarberManager</title>
-  <style>
-    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 20px; background-color: #f8fafc; color: #1e293b; }
-    .header { background: #1e293b; color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; }
-    .header h2 { margin: 0 0 10px 0; }
-    .nav a { color: #93c5fd; text-decoration: none; margin-right: 15px; font-weight: 500; }
-    .nav a:hover, .nav a.active { color: white; text-decoration: underline; }
-    .nav .logout { color: #fca5a5; float: right; }
-    .card { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-    .btn { display: inline-block; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 14px; border: none; cursor: pointer; }
-    .btn-primary { background: #2563eb; color: white; }
-    .btn-danger { background: #dc2626; color: white; padding: 4px 10px; font-size: 12px; }
-    .btn-edit { background: #f59e0b; color: white; padding: 4px 10px; font-size: 12px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
-    th { background: #f1f5f9; padding: 10px 12px; text-align: left; font-size: 13px; color: #475569; border-bottom: 2px solid #e2e8f0; }
-    td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
-    tr:hover td { background: #f8fafc; }
-    .price-tag { font-weight: bold; color: #059669; font-size: 15px; }
-  </style>
-</head>
+<html>
+<head><title>Servicios</title></head>
 <body>
-
-  <div class="header">
-    <h2>💈 BarberManager — Panel de Administración</h2>
-    <div class="nav">
-      <span>👤 Administrador: <strong><%= user || 'Admin' %></strong></span> | 
-      <a href="/services" class="active">✂️ Servicios</a>
-      <a href="/barbers">💈 Barberos</a>
-      <a href="/seasons">📅 Temporadas</a>
-      <a href="/pricing-rules">📊 Reglas de Precio</a>
-      <a href="/pricing">⚡ Probar Cotizador (Core)</a>
-      <a href="/auth/logout" class="logout">Cerrar Sesión</a>
-    </div>
-  </div>
-
-  <div class="card">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <div>
-        <h3 style="margin: 0;">Catálogo de Servicios de Barbería</h3>
-        <p style="color: #64748b; margin: 4px 0 0 0; font-size: 13px;">
-          Define los servicios base (cortes, barba, tintes) cuyo precio base será transformado por el Core dinámico.
-        </p>
-      </div>
-      <a href="/services/new" class="btn btn-primary">+ Crear Nuevo Servicio</a>
-    </div>
-
-    <table>
-      <thead>
+  <h2>Gestión de Servicios</h2>
+  <p>Bienvenido, <strong><%= user %></strong> | 
+    <a href="/services">Servicios</a> | 
+    <a href="/barbers">Barberos</a> | 
+    <a href="/seasons">Temporadas</a> | 
+    <a href="/pricing-rules">Reglas de Precio</a> | 
+    <a href="/pricing">Cotizador</a> | 
+    <a href="/auth/logout">Cerrar Sesión</a>
+  </p>
+  <hr>
+  <a href="/services/new">Crear Nuevo Servicio</a>
+  <br><br>
+  <table border="1" cellpadding="8">
+    <thead>
+      <tr>
+        <th>Nombre del Servicio</th>
+        <th>Precio ($)</th>
+        <th>Duración (min)</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% services.forEach(s => { %>
         <tr>
-          <th>Nombre del Servicio</th>
-          <th>Precio Base ($)</th>
-          <th>Duración Estimada</th>
-          <th>Acciones</th>
+          <td><%= s.nombre %></td>
+          <td>$<%= s.precio %></td>
+          <td><%= s.duracion %> min</td>
+          <td>
+            <a href="/services/edit/<%= s._id %>">Editar</a>
+            <form action="/services/delete/<%= s._id %>" method="POST" style="display:inline;">
+              <button type="submit">Eliminar</button>
+            </form>
+          </td>
         </tr>
-      </thead>
-      <tbody>
-        <% if (services.length === 0) { %>
-          <tr>
-            <td colspan="4" style="text-align: center; color: #64748b; padding: 25px;">
-              No hay servicios registrados. Haz clic en "Crear Nuevo Servicio".
-            </td>
-          </tr>
-        <% } %>
-        <% services.forEach(s => { %>
-          <tr>
-            <td><strong><%= s.nombre %></strong></td>
-            <td><span class="price-tag">$<%= Number(s.precio).toFixed(2) %></span></td>
-            <td>⏱️ <%= s.duracion %> minutos</td>
-            <td>
-              <a href="/services/edit/<%= s._id %>" class="btn btn-edit">Editar</a>
-              <form action="/services/delete/<%= s._id %>" method="POST" style="display:inline;" onsubmit="return confirm('¿Seguro que deseas eliminar este servicio?');">
-                <button type="submit" class="btn btn-danger">Eliminar</button>
-              </form>
-            </td>
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
-  </div>
-
+      <% }) %>
+    </tbody>
+  </table>
 </body>
 </html>

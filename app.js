@@ -21,17 +21,17 @@ app.use(session({
   cookie: { secure: false }
 }));
 
-// Rutas Públicas y de Autenticación
-app.get('/', (req, res) => res.render('index'));
+// Redireccionar raíz directamente al login
+app.get('/', (req, res) => res.redirect('/auth/login'));
 app.use('/auth', require('./routes/authRoutes'));
 
-// Rutas del Panel de Administración (Alimentan el Core)
+// Rutas de administración
 app.use('/services', require('./routes/serviceRoutes'));
 app.use('/barbers', require('./routes/barberRoutes'));
 app.use('/seasons', require('./routes/seasonRoutes'));
 app.use('/pricing-rules', require('./routes/pricingRuleRoutes'));
 
-// Ruta del Core (Cotizador de Precios Dinámicos)
+// Cotizador (Core)
 app.use('/pricing', require('./routes/pricingRoutes'));
 
 const PORT = process.env.PORT || 3000;

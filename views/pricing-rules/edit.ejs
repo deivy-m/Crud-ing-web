@@ -1,84 +1,34 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Editar Regla de Precio | BarberManager</title>
-  <style>
-    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 20px; background-color: #f8fafc; color: #1e293b; }
-    .card { max-width: 680px; margin: 30px auto; background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-    h2 { margin-top: 0; color: #1e293b; }
-    .form-group { margin-bottom: 16px; }
-    label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 6px; color: #334155; }
-    input, select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
-    .help-text { font-size: 12px; color: #64748b; margin-top: 4px; }
-    .alert-error { background: #fee2e2; border-left: 4px solid #ef4444; color: #991b1b; padding: 12px 16px; border-radius: 4px; margin-bottom: 20px; font-size: 14px; }
-    .fk-highlight { background: #eff6ff; border: 1px solid #bfdbfe; padding: 14px; border-radius: 6px; margin-bottom: 16px; }
-    .btn { padding: 10px 18px; border-radius: 6px; font-weight: 600; font-size: 14px; border: none; cursor: pointer; text-decoration: none; display: inline-block; }
-    .btn-primary { background: #2563eb; color: white; }
-    .btn-secondary { background: #e2e8f0; color: #475569; margin-left: 10px; }
-  </style>
-</head>
+<html>
+<head><title>Editar Regla de Precio</title></head>
 <body>
+  <h2>Editar Regla de Precio</h2>
+  <% if (error) { %><p style="color:red;"><%= error %></p><% } %>
+  <form action="/pricing-rules/update/<%= rule._id %>" method="POST">
+    <label>Nombre:</label> <input type="text" name="nombre" value="<%= rule.nombre %>" required><br><br>
+    
+    <label>Tipo:</label>
+    <select name="tipo" required>
+      <option value="horario" <%= rule.tipo === 'horario' ? 'selected' : '' %>>Horario</option>
+      <option value="categoria_barbero" <%= rule.tipo === 'categoria_barbero' ? 'selected' : '' %>>Categoría de Barbero</option>
+      <option value="temporada" <%= rule.tipo === 'temporada' ? 'selected' : '' %>>Temporada</option>
+    </select><br><br>
 
-  <div class="card">
-    <h2>✏️ Editar Regla de Precio</h2>
+    <label>Condición:</label> <input type="text" name="condicion" value="<%= rule.condicion %>" required><br><br>
+    <label>Factor:</label> <input type="number" name="factor" step="0.01" min="-0.5" max="1.0" value="<%= rule.factor %>" required><br><br>
 
-    <% if (error) { %>
-      <div class="alert-error">
-        <%= error %>
-      </div>
-    <% } %>
+    <label>Temporada:</label>
+    <select name="temporada">
+      <option value="">-- Ninguna --</option>
+      <% seasons.forEach(s => { %>
+        <option value="<%= s._id %>" <%= (rule.temporada && rule.temporada.toString() === s._id.toString()) ? 'selected' : '' %>><%= s.nombre %></option>
+      <% }) %>
+    </select><br><br>
 
-    <form action="/pricing-rules/update/<%= rule._id %>" method="POST">
-      <div class="form-group">
-        <label for="nombre">Nombre de la Regla:</label>
-        <input type="text" id="nombre" name="nombre" value="<%= rule.nombre %>" required>
-      </div>
-
-      <div class="form-group">
-        <label for="tipo">Tipo de Regla:</label>
-        <select id="tipo" name="tipo" required>
-          <option value="horario" <%= rule.tipo === 'horario' ? 'selected' : '' %>>Horario (Franja horaria / Días pico o valle)</option>
-          <option value="categoria_barbero" <%= rule.tipo === 'categoria_barbero' ? 'selected' : '' %>>Categoría de Barbero (Junior / Senior / Master)</option>
-          <option value="temporada" <%= rule.tipo === 'temporada' ? 'selected' : '' %>>Temporada Especial</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="condicion">Condición Técnica:</label>
-        <input type="text" id="condicion" name="condicion" value="<%= rule.condicion %>" required>
-      </div>
-
-      <div class="form-group">
-        <label for="factor">Factor de Modificación de Precio:</label>
-        <input type="number" id="factor" name="factor" step="0.01" min="-0.5" max="1.0" value="<%= rule.factor %>" required>
-      </div>
-
-      <!-- 🔗 DROPDOWN RELACIONAL A SEASONS -->
-      <div class="fk-highlight">
-        <label for="temporada">🔗 Temporada Vinculada (Dropdown de referencia foránea):</label>
-        <select id="temporada" name="temporada">
-          <option value="">-- No aplica / Ninguna temporada --</option>
-          <% seasons.forEach(s => { %>
-            <option value="<%= s._id %>" <%= (rule.temporada && rule.temporada.toString() === s._id.toString()) ? 'selected' : '' %>>
-              📅 <%= s.nombre %> (Ajuste: <%= s.factorPrecio >= 0 ? '+' : '' %><%= (s.factorPrecio * 100).toFixed(0) %>%)
-            </option>
-          <% }) %>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="descripcion">Descripción:</label>
-        <textarea id="descripcion" name="descripcion" rows="2"><%= rule.descripcion || '' %></textarea>
-      </div>
-
-      <div style="margin-top: 25px;">
-        <button type="submit" class="btn btn-primary">Actualizar Regla</button>
-        <a href="/pricing-rules" class="btn btn-secondary">Cancelar</a>
-      </div>
-    </form>
-  </div>
-
+    <label>Descripción:</label> <input type="text" name="descripcion" value="<%= rule.descripcion || '' %>"><br><br>
+    <button type="submit">Actualizar</button>
+  </form>
+  <br>
+  <a href="/pricing-rules">Volver</a>
 </body>
 </html>

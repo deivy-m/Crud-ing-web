@@ -1,82 +1,24 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registrar Barbero | BarberManager</title>
-  <style>
-    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 20px; background-color: #f8fafc; color: #1e293b; }
-    .card { max-width: 650px; margin: 30px auto; background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-    h2 { margin-top: 0; color: #1e293b; }
-    .form-group { margin-bottom: 16px; }
-    label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 6px; color: #334155; }
-    input, select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
-    input:focus, select:focus { outline: none; border-color: #2563eb; ring: 2px #93c5fd; }
-    .alert-error { background: #fee2e2; border-left: 4px solid #ef4444; color: #991b1b; padding: 12px 16px; border-radius: 4px; margin-bottom: 20px; font-size: 14px; line-height: 1.4; }
-    .note-box { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; padding: 12px; border-radius: 6px; font-size: 12px; margin-bottom: 16px; }
-    .btn { padding: 10px 18px; border-radius: 6px; font-weight: 600; font-size: 14px; border: none; cursor: pointer; text-decoration: none; display: inline-block; }
-    .btn-primary { background: #2563eb; color: white; }
-    .btn-secondary { background: #e2e8f0; color: #475569; margin-left: 10px; }
-  </style>
-</head>
+<html>
+<head><title>Nuevo Barbero</title></head>
 <body>
-
-  <div class="card">
-    <h2>💈 Registrar Nuevo Barbero</h2>
-    <p style="color: #64748b; font-size: 13px; margin-bottom: 20px;">
-      Ingrese los datos del barbero. La categoría determinará el multiplicador de precio en el Core.
-    </p>
-
-    <div class="note-box">
-      <strong>🚨 Requerimiento de Validación Back-End:</strong><br>
-      El campo <strong>Cédula de Identidad</strong> es un dato sensible. Se valida en el <strong>servidor</strong> mediante el algoritmo oficial módulo 10 de Ecuador.
-      <br>• Cédulas válidas de prueba: <code>1710034065</code>, <code>0926615566</code>, <code>1722886981</code>
-      <br>• Cédula inválida para probar rechazo: <code>1234567890</code> o <code>9999999999</code>
-    </div>
-
-    <% if (error) { %>
-      <div class="alert-error">
-        <%= error %>
-      </div>
-    <% } %>
-
-    <form action="/barbers" method="POST">
-      <div class="form-group">
-        <label for="nombre">Nombre Completo:</label>
-        <input type="text" id="nombre" name="nombre" value="<%= (typeof data !== 'undefined' && data.nombre) || '' %>" placeholder="Ej: Mateo Salazar" required>
-      </div>
-
-      <div class="form-group">
-        <label for="cedula">Cédula de Identidad (10 dígitos - Validación Back-End):</label>
-        <input type="text" id="cedula" name="cedula" maxlength="10" value="<%= (typeof data !== 'undefined' && data.cedula) || '' %>" placeholder="Ej: 1710034065" required>
-      </div>
-
-      <div class="form-group">
-        <label for="email">Correo Electrónico:</label>
-        <input type="email" id="email" name="email" value="<%= (typeof data !== 'undefined' && data.email) || '' %>" placeholder="ejemplo@barberia.com" required>
-      </div>
-
-      <div class="form-group">
-        <label for="telefono">Teléfono / Celular:</label>
-        <input type="text" id="telefono" name="telefono" value="<%= (typeof data !== 'undefined' && data.telefono) || '' %>" placeholder="Ej: 0991234567" required>
-      </div>
-
-      <div class="form-group">
-        <label for="categoria">Categoría del Barbero (Afecta tarifa en Core):</label>
-        <select id="categoria" name="categoria" required>
-          <option value="">-- Seleccione una categoría --</option>
-          <option value="Junior" <%= (typeof data !== 'undefined' && data.categoria === 'Junior') ? 'selected' : '' %>>Junior (Tarifa estándar - Factor 0%)</option>
-          <option value="Senior" <%= (typeof data !== 'undefined' && data.categoria === 'Senior') ? 'selected' : '' %>>Senior (Experiencia intermedia - Recargo +15%)</option>
-          <option value="Master" <%= (typeof data !== 'undefined' && data.categoria === 'Master') ? 'selected' : '' %>>Master (Especialista Premium - Recargo +30%)</option>
-        </select>
-      </div>
-
-      <div style="margin-top: 25px;">
-        <button type="submit" class="btn btn-primary">💾 Guardar Barbero</button>
-        <a href="/barbers" class="btn btn-secondary">Cancelar</a>
-      </div>
-    </form>
-  </div>
-
+  <h2>Registrar Barbero</h2>
+  <% if (error) { %><p style="color:red;"><%= error %></p><% } %>
+  <form action="/barbers" method="POST">
+    <label>Nombre:</label> <input type="text" name="nombre" value="<%= (typeof data !== 'undefined' && data.nombre) || '' %>" required><br><br>
+    <label>Cédula:</label> <input type="text" name="cedula" maxlength="10" value="<%= (typeof data !== 'undefined' && data.cedula) || '' %>" required><br><br>
+    <label>Email:</label> <input type="email" name="email" value="<%= (typeof data !== 'undefined' && data.email) || '' %>" required><br><br>
+    <label>Teléfono:</label> <input type="text" name="telefono" value="<%= (typeof data !== 'undefined' && data.telefono) || '' %>" required><br><br>
+    <label>Categoría:</label>
+    <select name="categoria" required>
+      <option value="">-- Seleccionar --</option>
+      <option value="Junior" <%= (typeof data !== 'undefined' && data.categoria === 'Junior') ? 'selected' : '' %>>Junior</option>
+      <option value="Senior" <%= (typeof data !== 'undefined' && data.categoria === 'Senior') ? 'selected' : '' %>>Senior</option>
+      <option value="Master" <%= (typeof data !== 'undefined' && data.categoria === 'Master') ? 'selected' : '' %>>Master</option>
+    </select><br><br>
+    <button type="submit">Guardar</button>
+  </form>
+  <br>
+  <a href="/barbers">Volver</a>
 </body>
 </html>

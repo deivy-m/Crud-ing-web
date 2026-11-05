@@ -1,143 +1,72 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cotizador de Precios Dinámicos (Core) | BarberManager</title>
-  <style>
-    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 20px; background-color: #f8fafc; color: #1e293b; }
-    .header { background: #1e293b; color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; }
-    .header h2 { margin: 0 0 10px 0; }
-    .nav a { color: #93c5fd; text-decoration: none; margin-right: 15px; font-weight: 500; }
-    .nav a:hover, .nav a.active { color: white; text-decoration: underline; }
-    .nav .logout { color: #fca5a5; float: right; }
-    .card { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 22px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 20px; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 6px; color: #334155; }
-    select, input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
-    .btn { display: inline-block; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 14px; border: none; cursor: pointer; }
-    .btn-primary { background: #16a34a; color: white; width: 100%; }
-    .btn-primary:hover { background: #15803d; }
-    .alert-error { background: #fee2e2; border-left: 4px solid #ef4444; color: #991b1b; padding: 12px; border-radius: 4px; margin-bottom: 16px; font-size: 14px; }
-    .resultado-box { background: #f0fdf4; border: 2px solid #86efac; border-radius: 8px; padding: 20px; text-align: center; }
-    .precio-final { font-size: 36px; font-weight: 800; color: #15803d; margin: 10px 0; }
-    .factores-table { width: 100%; border-collapse: collapse; margin-top: 15px; text-align: left; background: white; }
-    .factores-table th { background: #f8fafc; padding: 8px 12px; font-size: 12px; color: #475569; }
-    .factores-table td { padding: 8px 12px; border-top: 1px solid #e2e8f0; font-size: 13px; }
-  </style>
-</head>
+<html>
+<head><title>Cotizador</title></head>
 <body>
+  <h2>Cotizador de Precios Dinámicos (Core)</h2>
+  <p>Bienvenido, <strong><%= user || 'Usuario' %></strong> | 
+    <a href="/services">Servicios</a> | 
+    <a href="/barbers">Barberos</a> | 
+    <a href="/seasons">Temporadas</a> | 
+    <a href="/pricing-rules">Reglas de Precio</a> | 
+    <a href="/pricing">Cotizador</a> | 
+    <a href="/auth/logout">Cerrar Sesión</a>
+  </p>
+  <hr>
 
-  <div class="header">
-    <h2>💈 BarberManager — Demostración del Core</h2>
-    <div class="nav">
-      <span>👤 Administrador: <strong><%= user || 'Usuario' %></strong></span> | 
-      <a href="/services">✂️ Servicios</a>
-      <a href="/barbers">💈 Barberos</a>
-      <a href="/seasons">📅 Temporadas</a>
-      <a href="/pricing-rules">📊 Reglas de Precio</a>
-      <a href="/pricing" class="active">⚡ Cotizador (Core)</a>
-      <a href="/auth/logout" class="logout">Cerrar Sesión</a>
-    </div>
-  </div>
+  <% if (error) { %><p style="color:red;"><%= error %></p><% } %>
 
-  <div class="card" style="background: #eff6ff; border-color: #bfdbfe;">
-    <h3 style="margin-top: 0; color: #1e40af;">⚡ ¿Cómo la Administración Alimenta este Core?</h3>
-    <p style="color: #1e3a8a; font-size: 14px; line-height: 1.5; margin-bottom: 0;">
-      Este cotizador consume en tiempo real los datos creados en los módulos de administración:
-      <br>1. <strong>Servicios:</strong> provee el precio base.
-      <br>2. <strong>Barberos (validación cédula back-end):</strong> aplica factor según categoría (Junior +0%, Senior +15%, Master +30%).
-      <br>3. <strong>Temporadas y Reglas de Precio (dropdown relacional):</strong> evalúa si la fecha/hora corresponde a hora pico, hora valle o temporada alta festiva.
-    </p>
-  </div>
+  <h3>Calcular Precio de Servicio</h3>
+  <form action="/pricing/calculate" method="POST">
+    <label>Servicio:</label>
+    <select name="servicioId" required>
+      <option value="">-- Seleccionar --</option>
+      <% services.forEach(s => { %>
+        <option value="<%= s._id %>"><%= s.nombre %> ($<%= s.precio %>)</option>
+      <% }) %>
+    </select><br><br>
 
-  <% if (error) { %>
-    <div class="alert-error"><%= error %></div>
+    <label>Barbero:</label>
+    <select name="barberId" required>
+      <option value="">-- Seleccionar --</option>
+      <% barbers.forEach(b => { %>
+        <option value="<%= b._id %>"><%= b.nombre %> (<%= b.categoria %>)</option>
+      <% }) %>
+    </select><br><br>
+
+    <label>Fecha:</label> <input type="date" name="fecha" required><br><br>
+    <label>Hora:</label> <input type="time" name="hora" required><br><br>
+
+    <button type="submit">Calcular Precio</button>
+  </form>
+
+  <% if (resultado) { %>
+    <hr>
+    <h3>Resultado del Cálculo</h3>
+    <p><strong>Servicio:</strong> <%= resultado.servicio %></p>
+    <p><strong>Barbero:</strong> <%= resultado.barbero %></p>
+    <p><strong>Precio Base:</strong> $<%= resultado.precioBase %></p>
+    <p><strong>Precio Final Dinámico:</strong> <span style="font-size:20px; color:green; font-weight:bold;">$<%= resultado.precioFinal %></span></p>
+
+    <h4>Reglas y Factores Aplicados:</h4>
+    <table border="1" cellpadding="6">
+      <thead>
+        <tr>
+          <th>Regla</th>
+          <th>Detalle</th>
+          <th>Ajuste</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% resultado.factoresAplicados.forEach(f => { %>
+          <tr>
+            <td><%= f.nombre %></td>
+            <td><%= f.descripcion %></td>
+            <td><%= f.porcentaje %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
   <% } %>
-
-  <div class="grid">
-    <!-- Formulario de Cotización -->
-    <div class="card">
-      <h3 style="margin-top: 0;">🧮 Simular Cotización de Servicio</h3>
-      <form action="/pricing/calculate" method="POST">
-        <div style="margin-bottom: 15px;">
-          <label for="servicioId">1. Seleccionar Servicio (Alimentado de Admin Servicios):</label>
-          <select id="servicioId" name="servicioId" required>
-            <option value="">-- Seleccione un servicio --</option>
-            <% services.forEach(s => { %>
-              <option value="<%= s._id %>">✂️ <%= s.nombre %> — Base: $<%= Number(s.precio).toFixed(2) %></option>
-            <% }) %>
-          </select>
-        </div>
-
-        <div style="margin-bottom: 15px;">
-          <label for="barberId">2. Seleccionar Barbero (Alimentado de Admin Barberos):</label>
-          <select id="barberId" name="barberId" required>
-            <option value="">-- Seleccione un barbero --</option>
-            <% barbers.forEach(b => { %>
-              <option value="<%= b._id %>">💈 <%= b.nombre %> (Nivel: <%= b.categoria %> | CI: <%= b.cedula %>)</option>
-            <% }) %>
-          </select>
-        </div>
-
-        <div style="margin-bottom: 15px;">
-          <label for="fecha">3. Fecha de la Cita:</label>
-          <input type="date" id="fecha" name="fecha" required>
-        </div>
-
-        <div style="margin-bottom: 20px;">
-          <label for="hora">4. Hora de la Cita:</label>
-          <input type="time" id="hora" name="hora" required>
-          <small style="color: #64748b;">
-            💡 Tip: Lun-Mié 9am-12pm = Hora Valle (-15%). Vie-Sáb 2pm-8pm = Hora Pico (+20%).
-          </small>
-        </div>
-
-        <button type="submit" class="btn btn-primary">⚡ Calcular Precio Dinámico</button>
-      </form>
-    </div>
-
-    <!-- Resultado del Core -->
-    <div class="card">
-      <h3 style="margin-top: 0;">📊 Resultado del Cálculo Algorítmico</h3>
-      
-      <% if (!resultado) { %>
-        <div style="text-align: center; color: #64748b; padding: 40px 10px;">
-          <span style="font-size: 40px;">💡</span>
-          <p>Selecciona los parámetros a la izquierda y presiona "Calcular Precio Dinámico" para ver el desglose en tiempo real.</p>
-        </div>
-      <% } else { %>
-        <div class="resultado-box">
-          <div style="font-size: 13px; color: #166534; font-weight: 600;">PRECIO FINAL DINÁMICO</div>
-          <div class="precio-final">$<%= resultado.precioFinal %></div>
-          <div style="font-size: 13px; color: #475569;">
-            Precio Base: <strong>$<%= resultado.precioBase %></strong> | 
-            Diferencia total: <strong><%= resultado.diferencia >= 0 ? '+' : '' %>$<%= resultado.diferencia %></strong>
-          </div>
-        </div>
-
-        <h4 style="margin: 15px 0 8px 0; font-size: 14px;">Desglose de Reglas Aplicadas:</h4>
-        <table class="factores-table">
-          <thead>
-            <tr>
-              <th>Factor / Regla</th>
-              <th>Descripción</th>
-              <th>Ajuste</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% resultado.factoresAplicados.forEach(f => { %>
-              <tr>
-                <td><strong><%= f.nombre %></strong></td>
-                <td><%= f.descripcion %></td>
-                <td><span style="font-weight: bold; color: <%= f.porcentaje.startsWith('+') ? '#dc2626' : (f.porcentaje.startsWith('-') ? '#16a34a' : '#64748b') %>;"><%= f.porcentaje %></span></td>
-              </tr>
-            <% }) %>
-          </tbody>
-        </table>
-      <% } %>
-    </div>
-  </div>
 
 </body>
 </html>
