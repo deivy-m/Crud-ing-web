@@ -108,29 +108,35 @@ exports.calculateDynamicPrice = async (req, res) => {
     }
 
     // 2. Factor Horario (Hora pico vs Hora valle)
-    const fechaObj = new Date(fecha + 'T00:00:00');
+    // Parsear fecha local sin desfase UTC
+    const [anio, mes, dia] = fecha.split('-').map(Number);
+    const fechaObj = new Date(anio, mes - 1, dia);
     const diaSemana = fechaObj.getDay(); // 0 = Domingo, 1 = Lunes, ..., 5 = Viernes, 6 = Sábado
     let factorHorario = 0;
 
-    // Lunes(1), Martes(2), Miércoles(3) de 10:00 a 12:00 -> Hora Valle (-15%)
-    if ((diaSemana >= 1 && diaSemana <= 3) && (horas >= 10 && horas < 12)) {
-      factorHorario = -0.15;
-      factoresAplicados.push({
-        nombre: 'Hora Valle (Happy Hour)',
-        tipo: 'horario',
-        descripcion: 'Lunes a Miércoles 10:00–12:00 (-15% descuento)',
-        porcentaje: '-15%',
-        impacto: precioBase * factorHorario
-      });
-    } 
-    // Viernes(5), Sábado(6) de 14:00 a 20:00 -> Hora Pico (+20%)
-    else if ((diaSemana === 5 || diaSemana === 6) && (horas >= 14 && horas <= 20)) {
+    const esFinDeSemana = (diaSemana === 5 || diaSemana === 6 || diaSemana === 0);
+    // Hora pico: a partir de las 16:00 (4:00 PM) cualquier día, o desde las 14:00 (2:00 PM) en fines de semana
+    const esHoraPicoTarde = (horas >= 16 && horas <= 20);
+    const esHoraPicoFinde = esFinDeSemana && (horas >= 14 && horas <= 20);
+
+    if (esHoraPicoTarde || esHoraPicoFinde) {
       factorHorario = 0.20;
       factoresAplicados.push({
         nombre: 'Hora Pico (Alta Demanda)',
         tipo: 'horario',
-        descripcion: 'Viernes y Sábados 14:00–20:00 (+20% recargo)',
+        descripcion: esHoraPicoFinde ? 'Fin de semana tarde (+20% recargo)' : 'Horario tarde 4:00 PM–8:00 PM (+20% recargo)',
         porcentaje: '+20%',
+        impacto: precioBase * factorHorario
+      });
+    } 
+    // Hora Valle: Lunes(1), Martes(2), Miércoles(3) de 10:00 AM a 12:30 PM (-15%)
+    else if ((diaSemana >= 1 && diaSemana <= 3) && (horas >= 10 && horas < 13)) {
+      factorHorario = -0.15;
+      factoresAplicados.push({
+        nombre: 'Hora Valle (Happy Hour)',
+        tipo: 'horario',
+        descripcion: 'Lunes a Miércoles 10:00 AM–12:30 PM (-15% descuento)',
+        porcentaje: '-15%',
         impacto: precioBase * factorHorario
       });
     } else {
@@ -148,6 +154,8 @@ exports.calculateDynamicPrice = async (req, res) => {
     const temporadaCoincidente = seasons.find(s => {
       const inicio = new Date(s.fechaInicio);
       const fin = new Date(s.fechaFin);
+      inicio.setHours(0, 0, 0, 0);
+      fin.setHours(23, 59, 59, 999);
       return fechaObj >= inicio && fechaObj <= fin;
     });
 
@@ -167,11 +175,14 @@ exports.calculateDynamicPrice = async (req, res) => {
     const multiplicadorTotal = (1 + factorBarbero) * (1 + factorHorario) * (1 + factorTemporada);
     const precioFinal = precioBase * multiplicadorTotal;
 
+    const diasNombres = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    const nombreDia = diasNombres[diaSemana];
+
     const resultado = {
       servicio: service.nombre,
       precioBase: precioBase.toFixed(2),
       barbero: `${barber.nombre} (${barber.categoria})`,
-      fecha,
+      fecha: `${nombreDia} ${dia}/${mes}/${anio}`,
       hora: (horas > 12 ? (horas - 12) : horas) + ':' + (minutos < 10 ? '0' + minutos : minutos) + ' ' + (horas >= 12 ? 'PM' : 'AM'),
       factoresAplicados,
       precioFinal: precioFinal.toFixed(2),
