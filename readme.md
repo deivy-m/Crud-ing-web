@@ -1,10 +1,4 @@
-# 💈 BarberManager — Administración MVC y Motor de Precios Dinámicos (Core)
-
-[![Node.js](https://img.shields.io/badge/Node.js-v18%2B-green?logo=node.js)](https://nodejs.org/)
-[![Express](https://img.shields.io/badge/Express-5.2.1-lightgrey?logo=express)](https://expressjs.com/)
-[![MongoDB Atlas](https://img.shields.io/badge/MongoDB%20Atlas-Cloud-47A248?logo=mongodb)](https://www.mongodb.com/atlas)
-[![EJS](https://img.shields.io/badge/EJS-7.0.1-yellow)](https://ejs.co/)
-[![Architecture](https://img.shields.io/badge/Architecture-MVC%20Classic-orange)](#-arquitectura-mvc)
+# BarberManager — Administración MVC y Motor de Precios Dinámicos (Core)
 
 Aplicación web desarrollada bajo la arquitectura **MVC (Modelo-Vista-Controlador)** con **Node.js, Express, EJS y MongoDB Atlas**. 
 
@@ -12,15 +6,12 @@ Este proyecto implementa el módulo de **Administración** que alimenta el **Cor
 
 ---
 
-## 📹 Video Explicativo (Loom / YouTube)
+## Video Explicativo
 
-- **Enlace del Video:** `[COLOCA_AQUÍ_TU_ENLACE_DE_LOOM_O_YOUTUBE]`
-- **Duración recomendada:** 4 a 6 minutos.
-- **Guión paso a paso para la grabación:** Consulta el archivo [`GUION_VIDEO_ADMIN.md`](./GUION_VIDEO_ADMIN.md).
-
+- **Enlace del Video:** `[(https://youtu.be/qkOvlmiQH5E)]`
 ---
 
-## 🎯 ¿Cómo la Administración Alimenta al Core?
+## ¿Cómo la Administración Alimenta al Core?
 
 El **Core** del sistema es un **Motor de Precios Dinámicos** que calcula en tiempo real la tarifa de un servicio según:
 1. **Precio Base del Servicio:** Definido en el módulo administrativo de **Servicios** (`/services`).
@@ -169,4 +160,3 @@ La aplicación estará disponible en: **`http://localhost:3000`**
 
 ## 👤 Autor
 - **Deivy Molina**
-- Estudiante de Ingeniería Web — 7° Semestre
